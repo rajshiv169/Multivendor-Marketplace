@@ -7,9 +7,9 @@ const { isSignedIn, isAuthenticated, isWholesaler, isAdmin} = require("../contro
 router.param("ownerId",getOwnerById);
 
 router.get("/owner/:ownerId", isSignedIn, isAuthenticated, getOwner);
-router.put("/owner/:ownerId", isSignedIn, isAuthenticated, updateOwner);
+router.put("/owner/:ownerId", isSignedIn, isAuthenticated, getOwnerById, updateOwner);
 
 // list of all owners
-router.get("/owners", isAuthenticated, isAdmin, getAllOwners)
+router.get("/owners",isSignedIn, isAdmin, getAllOwners)
 
 module.exports = router;

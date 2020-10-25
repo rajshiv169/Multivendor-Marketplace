@@ -143,33 +143,40 @@ exports.isSignedIn = expressJwt({
     userProperty: "auth"
 });
 
-// TODO: this things are to be integrated
+//custom middlewares
+exports.isAuthenticated = (req,res,next) => {
+    let checker = req.profile && req.auth && req.profile.id == req.auth.id;
+    if(!checker){
+        return res.status(403).json({
+            error: "ACCESS DENIED"
+        });
+    }
+    next();
+};
 
-// //custom middlewares
-// exports.isAuthenticated = (req,res,next) => {
-//     let checker = req.profile && req.auth && req.profile._id == req.auth._id;
-//     if(!checker){
-//         return res.status(403).json({
-//             error: "ACCESS DENIED"
-//         });
-//     }
-//     next();
-// };
+// For future aspects : this will helps to authenticate admin for the whole site
+// TODO: resolve the error: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+//       after api calling @ api/owners
 
+exports.isAdmin = (req,res,next) => {
+    connection.query('SELECT * FROM ownerProfile WHERE id=?', req.auth.id , function (error, results, fields) {
+        if (error) throw error;
+        var string=JSON.stringify(results);
+        json = JSON.parse(string);
+        if(json[0].role <= 1){
+            return res.status(403).json({
+                error: "You're not Admin, Access denied"
+            });
+        }
+    });
+    next();
+};
+
+// TO DO: 
 // exports.isWholesaler = (req,res,next) => {
 //     if(req.profile.role === 0){
 //         return res.status(403).json({
 //             error: "You're not Wholesaler, Access denied"
-//         });
-//     }
-//     next();
-// }
-
-// // For future aspects : this will helps to authenticate admin for the whole site
-// exports.isAdmin = (req,res,next) => {
-//     if(req.profile.role <= 1){
-//         return res.status(403).json({
-//             error: "You're not Admin, Access denied"
 //         });
 //     }
 //     next();

@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS ownerProfile (
 	role tinyint(1) NOT NULL DEFAULT '0',
 	companyID int NULL,
 	createdAt TIMESTAMP,
-	updatedAT TIMEStAMP,
+	updatedAt TIMEStAMP,
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS companyDetails (
 	registration_no int(30) NOT NULL,
 	dda_no int(30) NOT NULL,
 	createdAt TIMESTAMP,
-	updatedAT TIMEStAMP,
+	updatedAt TIMEStAMP,
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1  ;
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS purchaseDetails (
 	photo varchar(200) NOT NULL,
 	status tinyint(1) NOT NULL DEFAULT '0',
 	createdAt TIMESTAMP,
-	updatedAT TIMEStAMP,
+	updatedAt TIMEStAMP,
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1  ;
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS paymentDetails (
 	status tinyint(1) NOT NULL DEFAULT '0',
 	purchaseID int NOT NULL,
 	createdAt TIMESTAMP,
-	updatedAT TIMEStAMP,
+	updatedAt TIMEStAMP,
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1  ;
 
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS orderDetails (
 	ownerID int NOT NULL,
 	purchaseID int NOT NULL,
 	createdAt TIMESTAMP,
-	updatedAT TIMEStAMP,
+	updatedAt TIMEStAMP,
 	PRIMARY KEY (id),
 	FOREIGN KEY (ownerID) REFERENCES ownerProfile (id),
 	FOREIGN KEY (purchaseID) REFERENCES purchaseDetails (id)
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS payments (
 	id int(11) NOT NULL AUTO_INCREMENT,
 	paymentID int NOT NULL,
 	createdAt TIMESTAMP,
-	updatedAT TIMEStAMP,
+	updatedAt TIMEStAMP,
 	PRIMARY KEY (id),
 	FOREIGN KEY (paymentID) REFERENCES paymentDetails (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

@@ -23,19 +23,20 @@ dotenv.config();
 // })
 
 //mysql connection
-const connection = mysql.createConnection({
+const connection = mysql.createPool({
+  connectionLimit : 10,
   host: process.env.HOST,
   user: process.env.MYSQLUSER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE
 });
 
-connection.connect((err) => {
-  if(!err)
-    console.log('Connected to the MYSQL Database');
-  else
-    console.log('Connection Failed!'+ JSON.stringify(err,undefined,2));
-});
+// connection.connect((err) => {
+//   if(!err)
+//     console.log('Connected to the MYSQL Database');
+//   else
+//     console.log('Connection Failed!'+ JSON.stringify(err,undefined,2));
+// });
 
 module.exports = connection;
 
@@ -50,11 +51,11 @@ app.use(cookieParser());
 
 //Import Routes
 const authRoutes = require("./routes/auth");
-// const ownerRoutes = require("./routes/owner")
+const ownerRoutes = require("./routes/owner")
 
 //Routes
 app.use("/api", authRoutes);
-// app.use("/api", ownerRoutes);
+app.use("/api", ownerRoutes);
 
 app.listen(port, (err) => {
     if(err){
