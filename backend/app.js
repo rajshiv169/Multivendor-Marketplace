@@ -31,6 +31,13 @@ const connection = mysql.createPool({
   database: process.env.DATABASE
 });
 
+connection.getConnection((err,con) => {
+    if(con) {
+        console.log('Connected to the MYSQL Database');
+    } else {
+        console.log(err);
+    }
+});
 // connection.connect((err) => {
 //   if(!err)
 //     console.log('Connected to the MYSQL Database');
@@ -51,11 +58,15 @@ app.use(cookieParser());
 
 //Import Routes
 const authRoutes = require("./routes/auth");
-const ownerRoutes = require("./routes/owner")
+const ownerRoutes = require("./routes/owner");
+const companyRoutes = require("./routes/company");
+const purchaseRoutes = require("./routes/purchase");
 
 //Routes
 app.use("/api", authRoutes);
 app.use("/api", ownerRoutes);
+app.use("/api", companyRoutes);
+app.use("/api", purchaseRoutes);
 
 app.listen(port, (err) => {
     if(err){

@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS orderDetails (
 
 CREATE TABLE IF NOT EXISTS payments (
 	id int(11) NOT NULL AUTO_INCREMENT,
+	payment int NOT NULL,
 	paymentID int NOT NULL,
 	createdAt TIMESTAMP,
 	updatedAt TIMEStAMP,

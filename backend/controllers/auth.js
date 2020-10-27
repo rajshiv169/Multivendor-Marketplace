@@ -154,21 +154,44 @@ exports.isAuthenticated = (req,res,next) => {
     next();
 };
 
+// for role
+exports.getRole = (req,res,next) => {
+    connection.getConnection(function(err,connection){
+        connection.query('SELECT role FROM ownerProfile WHERE id=?', req.auth.id ,function(error,results, fields){
+            connection.release();
+            if (error) throw error;
+            var string=JSON.stringify(results);
+            var json = JSON.parse(string);
+            req.role = json[0].role;
+            next();        
+        }); 
+    });
+};
+
 // For future aspects : this will helps to authenticate admin for the whole site
 // TODO: resolve the error: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
 //       after api calling @ api/owners
 
 exports.isAdmin = (req,res,next) => {
-    connection.query('SELECT * FROM ownerProfile WHERE id=?', req.auth.id , function (error, results, fields) {
-        if (error) throw error;
-        var string=JSON.stringify(results);
-        json = JSON.parse(string);
-        if(json[0].role <= 1){
-            return res.status(403).json({
-                error: "You're not Admin, Access denied"
-            });
-        }
-    });
+    connection.getConnection(function(err, connection) {
+        if (err) throw err; // not connected!
+       
+        // Use the connection
+        connection.query('SELECT * FROM ownerProfile WHERE id=?', req.auth.id , function (error, results, fields) {
+            // When done with the connection, release it.
+            connection.release();
+            if (error) throw error;
+            var string=JSON.stringify(results);
+            json = JSON.parse(string);
+            if(json[0].role <= 1){
+                return res.status(403).json({
+                    error: "You're not Admin, Access denied"
+                });
+            }
+        });
+        
+      });
+      
     next();
 };
 
