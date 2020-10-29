@@ -2,6 +2,11 @@ const { validationResult, check } = require('express-validator');
 const moment = require('moment');
 const connection = require('../app');
 
+// packages to upload photo
+const aws = require('aws-sdk');
+const multer = require('multer');
+const multerS3 = require('multer-s3'); 
+
 exports.addPurchase = (req,res) => {
     const errors = validationResult(req);
 
@@ -15,7 +20,7 @@ exports.addPurchase = (req,res) => {
     const purchase = {};
     purchase.buyer = req.auth.id;
     purchase.saler = req.body.saler;
-    purchase.photo = req.body.photo;
+    purchase.photo = req.file.location;
     purchase.createdAt = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     connection.getConnection(function(err, connection) {
         if (err) throw err; // not connected!
@@ -72,3 +77,25 @@ exports.getPurchase = (req, res) => {
         }); 
     }); 
 };
+
+// Middlewares to upload photo
+aws.config.update({
+    secretAccessKey: process.env.AWSSecretKey,
+    accessKeyId: process.env.AWSAccessKeyId
+});
+
+const s3 = new aws.S3();
+
+exports.upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: "multi-vendor",
+        acl: "public-read",
+        metadata: (req, file, cb) => {
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: (req, file, cb) => {
+            cb(null, Date.now().toString());
+        }
+    })
+});
