@@ -48,8 +48,9 @@ exports.signup = (req,res) => {
         var string=JSON.stringify(results);
         json = JSON.parse(string);
         if(json.length) {
-            return res.status(400).json({
+            return res.json({
                 message: "email or phone number already used",
+                error: "1"
             })
         }
 
