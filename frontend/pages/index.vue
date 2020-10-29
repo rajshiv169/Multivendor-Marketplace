@@ -1,5 +1,8 @@
 <template>
-  <h1>Hello, there !!</h1>
+  <div class="main-center">
+    <h1>Welcome!!</h1>
+    <h2> To MultiVendor App </h2>
+  </div>
 </template>
 
 <script>

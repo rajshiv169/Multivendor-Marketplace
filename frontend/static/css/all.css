@@ -1,3 +1,10 @@
 .navbar {
     background-color: #006266;
 }
+
+.main-center {
+    margin: 200px 10px;
+    text-align: center;
+    size: 100px;
+    color: #006266;
+}

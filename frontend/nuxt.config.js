@@ -1,3 +1,5 @@
+const URL = 'http://localhost:3000';
+
 export default {
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -36,12 +38,32 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    '@nuxtjs/auth'
   ],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: {},
+  axios: {
+    proxy: true,
+    baseURL: URL
+  },
+
+  proxy: {
+    "/api": URL
+  },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/api/signin', method: 'post', propertyName: 'token' },
+          logout: { url: '/api/signout', method: 'get' },
+          user: { url: '/api/owner', method: 'get', propertyName: 'user' }
+        },
+      }
+    }
   }
 }

@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
+const cors = require('cors');
 // const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
@@ -55,6 +56,8 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use(cors());
 
 //Import Routes
 const authRoutes = require("./routes/auth");
