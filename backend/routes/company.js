@@ -7,14 +7,16 @@ const { addCompany, getCompanyID ,getCompany, updateCompany } = require("../cont
 const {isSignedIn, isAuthenticated} = require("../controllers/auth")
 
 router.post("/addCompany", [
-    check("name", "company name should be at least 10 char").isLength({ min: 10 }),
-    check("panNumber", "pan number should be at least 8 char").isLength({ min: 8 }),
-    check("registrationNumber", "registration number should be at least 8 char").isLength({ min: 8 }),
-    check("ddaNumber", "dda number should be at least 8 char").isLength({ min: 8 }),
+    check("name", "company name should be at least 10 character").isLength({ min: 10 }),
+    check("panNumber", "pan number should be at least 8 character").isLength({ min: 8 }),
+    check("registrationNumber", "registration number should be at least 8 character").isLength({ min: 8 }),
+    check("ddaNumber", "dda number should be at least 8 character").isLength({ min: 8 }),
 ], isSignedIn, addCompany);
 
-router.get("/company", isSignedIn, getCompanyID, getCompany);
-router.put("/company", isSignedIn, getCompanyID, updateCompany);
+router.param("companyID",getCompanyID);
+
+router.get("/company/:companyID", isSignedIn, getCompany);
+router.put("/company/:companyID", isSignedIn, updateCompany);
 
 
 module.exports = router;

@@ -62,9 +62,13 @@ exports.signup = (req,res) => {
                 });
             }
             // console.log(owner);
+            const token = jwt.sign(owner, process.env.SECRET,{
+                expiresIn: 604800 // 1 week
+            });
+
             res.json({
-                name: owner.name,
-                email: owner.email
+                token: token,
+                message: "successfully created a new user"
             });
         })
     });    
@@ -106,10 +110,9 @@ exports.signin = (req,res) => {
 
         if(password === json[0].encryPassword){
             // create a token for token based login
-            const token = jwt.sign({ id: json[0].id}, process.env.SECRET);
-
-            //put token in cookie
-            res.cookie("token",token, {expire: 86400});
+            const token = jwt.sign({ id: json[0].id}, process.env.SECRET,{
+                expiresIn: 604800 // 1 week
+            });
 
             //response to frontend
             return res.json({
@@ -146,6 +149,7 @@ exports.isSignedIn = expressJwt({
 
 //custom middlewares
 exports.isAuthenticated = (req,res,next) => {
+    console.log(req.profile)
     let checker = req.profile && req.auth && req.profile.id == req.auth.id;
     if(!checker){
         return res.status(403).json({

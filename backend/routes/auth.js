@@ -13,7 +13,7 @@ router.post("/signup", [
 
 router.post("/signin", [
     check("email", "email is required").isEmail(),
-    check("password", "password is require").isLength({ min: 1 })
+    check("password", "password is required").isLength({ min: 1 })
 ], signin);
 
 router.get("/signout", signout);

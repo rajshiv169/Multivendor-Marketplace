@@ -3,8 +3,8 @@ const moment = require('moment');
 const connection = require("../app");
 const crypto = require("crypto");
 
-exports.getOwnerById = (req, res, next, id) => {
-    connection.query('SELECT * FROM ownerProfile WHERE id=?', id, function (error, results, fields) {
+exports.getOwnerByToken = (req, res, next) => {
+    connection.query('SELECT * FROM ownerProfile WHERE id=?', req.auth.id, function (error, results, fields) {
         if (error) throw error;
         var string=JSON.stringify(results);
         var json = JSON.parse(string);
@@ -42,16 +42,21 @@ exports.getAllOwners = (req,res) => {
 }
 
 exports.updateOwner = (req,res) => {
+    const owner = {};
+    if(owner.name)owner.name = req.body.name;
+    if(owner.email)owner.email = req.body.email;
+    if(owner.phone)owner.phone = req.body.phone;
     if(req.body.password){
-        req.body.encryPassword = crypto.createHmac('sha256', owner.salt)
+        owner.encryPassword = crypto.createHmac('sha256', owner.salt)
         .update(req.body.password)
         .digest('hex');
         req.body.password = undefined;
     }
-    req.body.updatedAt = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    connection.query('UPDATE ownerProfile SET ? WHERE id = ?', [req.body, req.profile.id] , function (error, results, fields) {
+    owner.updatedAt = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    connection.query('UPDATE ownerProfile SET ? WHERE id = ?', [owner, req.profile.id] , function (error, results, fields) {
         if (error) throw error;
         res.json({
+            success: true,
             message: "Owner is Updated!",
         });
     });

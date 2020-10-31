@@ -8,7 +8,7 @@ exports.addCompany = (req,res) => {
 
     if (!errors.isEmpty()) {
         return res.status(422).json({
-        error: errors.array()[0].msg
+        message: errors.array()[0].msg
         });
     }
     // console.log(req.body);
@@ -19,6 +19,7 @@ exports.addCompany = (req,res) => {
     company.registration_no = req.body.registrationNumber;
     company.dda_no = req.body.ddaNumber;
     company.createdAt = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    console.log(req.body.role)
     connection.getConnection(function(err, connection) {
         if (err) throw err; // not connected!
        
@@ -39,8 +40,8 @@ exports.addCompany = (req,res) => {
             if (error) throw error;
             var string=JSON.stringify(results);
             var json = JSON.parse(string);
-
-            connection.query('UPDATE ownerProfile SET companyID = ? WHERE id =?', [ json[0].id, req.auth.id], function (error, results, fields) {
+            console.log(req.body.role)
+            connection.query('UPDATE ownerProfile SET companyID = ?, role = ? WHERE id =?', [ json[0].id, req.body.role, req.auth.id], function (error, results, fields) {
                 connection.release();
                 if (error) throw error;
                 return res.json({
@@ -53,27 +54,9 @@ exports.addCompany = (req,res) => {
 
 };
 
-exports.getCompanyID = (req, res, next) => {
+exports.getCompanyID = (req, res, next, id) => {
     connection.getConnection(function(err,connection){
-        connection.query('SELECT CompanyID FROM ownerProfile WHERE id=?', req.auth.id, function(error,results, fields){
-            connection.release();
-            if (error) throw error;
-            var string=JSON.stringify(results);
-            var json = JSON.parse(string);
-            if(!json.length) {
-                return res.status(400).json({
-                    error: "please create company details",
-                })
-            }
-            req.companyID = json[0].CompanyID   
-            next();          
-        }); 
-    }); 
-};
-
-exports.getCompany = (req,res) => {
-    connection.getConnection(function(err,connection){
-        connection.query('SELECT * FROM companyDetails WHERE id=?', req.companyID, function (error, results, fields) {
+        connection.query('SELECT * FROM companyDetails WHERE id=?', req.params.companyID, function (error, results, fields) {
             connection.release();
             if (error) throw error;
             var string=JSON.stringify(results);
@@ -84,11 +67,16 @@ exports.getCompany = (req,res) => {
                     error: "No company was found in database!",
                 })
             }
-            company[0].createdAt = undefined;  
-            company[0].updatedAt = undefined; 
-            return res.json(company[0]);     
+            req.company = company[0];
+            next();
         }); 
-    });
+    }); 
+};
+
+exports.getCompany = (req,res) => {
+    req.company.createdAt = undefined;  
+    req.company.updatedAt = undefined; 
+    return res.json(req.company);
 };
 
 exports.updateCompany  = (req,res) => {
@@ -98,9 +86,10 @@ exports.updateCompany  = (req,res) => {
     if(req.body.registrationNumber) company.registration_no = req.body.registrationNumber;
     if(req.body.ddaNumber) company.dda_no = req.body.ddaNumber;
     company.updatedAt = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
-    connection.query('UPDATE companyDetails SET ? WHERE id = ?', [company, req.companyID] , function (error, results, fields) {
+    connection.query('UPDATE companyDetails SET ? WHERE id = ?', [company, req.company.id] , function (error, results, fields) {
         if (error) throw error;
         res.json({
+            success: true,
             message: "company details is Updated!",
         });
     });

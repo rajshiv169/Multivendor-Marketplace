@@ -6,32 +6,30 @@
     <b-row>
         <b-col></b-col>
         <b-col>
-            <form class="signup-form">
+            <form class="company-form">
+                
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" placeholder="Enter name" v-model="name">
+                    <input type="text" class="form-control" :placeholder="owner.name" v-model="name">
                 </div>
 
                 <div class="form-group">
-                    <label>Email address</label>
-                    <input type="email" class="form-control" placeholder="Enter email" v-model="email">
+                    <label>Email</label>
+                    <input type="text" class="form-control" :placeholder="owner.email" v-model="email">
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" class="form-control" placeholder="Enter phone" v-model="phone">
+                    <input type="text" class="form-control" :placeholder="owner.phone" v-model="phone">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" class="form-control" placeholder="Password" v-model="password">
+                    <input type="password" class="form-control" placeholder="***********" v-model="password">
                 </div>
                 <div class="form-group">
                     <label>Confirm Password</label>
                     <input type="password" class="form-control" placeholder="Confirm password" v-model="confirmPassword">
                 </div>
-                <div class="form-group">
-                    <small class="form-text text-muted">Are you already User, Please <nuxt-link to="/signin">login</nuxt-link>!</small>
-                </div>
-                <a href="#" class="btn btn-colour-1" @click="onSignUp">Sign Up</a>
+                <a class="btn btn-colour-1" @click="onUpdateProfile">Update Owner</a>
             </form>
         </b-col>
         <b-col></b-col>
@@ -41,9 +39,16 @@
 
 <script>
 export default {
-    middleware: "auth",
-    auth: "guest",
-    
+    async asyncData({ $axios, $auth }) {
+        try {
+            let response = await $axios.$get("/api/owner");
+            return {
+                owner: response
+            };
+        } catch(err){
+            console.log(err);
+        }
+    },    
     data() {
         return {
             name: "",
@@ -55,7 +60,7 @@ export default {
         };
     },
     methods: {
-        async onSignUp() {
+        async onUpdateProfile() {
             if(this.password === this.confirmPassword){
                 try {
                     let data = {
@@ -65,15 +70,11 @@ export default {
                         password: this.password
                     }
                     
-                    let response = await this.$axios.$post("api/signup", data);
+                    let response = await this.$axios.$put("api/owner", data);
                     // console.log(response);
-                    if(!response.error){
-                        await this.$auth.loginWith('local', {
-                            data: {
-                                email: this.email,
-                                password: this.password
-                            } 
-                        });
+                    if(response.success){
+                        this.message = response.message
+                        await new Promise(resolve => setTimeout(resolve, 3000));
                         this.$router.push("/");
                     }
                     return this.message = response.message
@@ -89,6 +90,10 @@ export default {
 </script>
 
 <style>
+.company-form {
+    padding: 20px 0px;
+}
+
 .btn-colour-1 {
   color: #fff;
   background-color: #004E64;
